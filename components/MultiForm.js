@@ -3,7 +3,6 @@ import Form from './Form';
 import Button from './Button';
 import colors from '../lib/colors'
 
-// TODO add validators
 
 class MultiForm extends Component {
 	constructor(props) {
@@ -43,7 +42,7 @@ class MultiForm extends Component {
 
 	submit(form_values) {
 		// callback with state
-		if (!this.props.loading) { // don't submit if still loading last request
+		if (!this.props.disabled) { // don't submit if still loading last request
 			this.props.onSubmit({...this.state.response, ...form_values})
 			this.setState({ response: {} })
 		}

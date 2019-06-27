@@ -1,5 +1,5 @@
 import Link from 'next/link'
-
+import { connect } from 'react-redux'
 import withLayout from '../components/Layout';
 import Button from '../components/Button';
 import colors from '../lib/colors'
@@ -11,9 +11,9 @@ const Index = (props) => {
 		<div className="box">
 			<Link href="/signup">
 				<div className="button">
-					<Button title="Get started"
+					{!props.loggedIn && <Button title="Get started"
 							primary={true}
-					/>
+					/>}
 				</div>
 			</Link>
 		</div>
@@ -41,4 +41,15 @@ const Index = (props) => {
 	</div>
 )};
 
-export default withLayout(Index)
+
+const mapStateToProps = state => {
+    return {
+        loggedIn: state.loggedIn,
+    };
+};
+
+
+export default connect(
+  mapStateToProps,
+  null,
+)(withLayout(Index))

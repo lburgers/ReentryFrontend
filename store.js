@@ -4,13 +4,28 @@ import thunkMiddleware from 'redux-thunk'
 
 import reducer, { initialState } from './redux/reducer'
 
+const persistentFields = {
+  'loggedIn': true,
+  'user': true,
+  'user_type': true,  
+}
+
+
 // load to local storage
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem('reduxState');
+    let serializedState = localStorage.getItem('reduxState');
     if (serializedState === null) {
       return undefined;
     }
+
+    // TODO: add specific persistent fields
+    // Object.keys(serializedState).forEach((field) => {
+    //   if (!persistentFields[field]) {
+    //     serializedState[field] = initialState[field]
+    //   }
+    // })
+
     return JSON.parse(serializedState);
   } catch (err) {
     return undefined;

@@ -1,5 +1,10 @@
 import db from '../services/db'
 
+export const user_types = {
+	'employer': 'employer',
+	'employee': 'employee'
+}
+
 export const actionTypes = {
 	'CREATE_INIT': 'CREATE_INIT',
 	'CREATE_SUCCESS': 'CREATE_SUCCESS',
@@ -19,8 +24,8 @@ export const createUserFail = (error) => {
   return { type: actionTypes.CREATE_FAIL, error }
 }
 
-export const createUserSuccess = (user) => {
-  return { type: actionTypes.CREATE_SUCCESS, user }
+export const createUserSuccess = (user, user_type) => {
+  return { type: actionTypes.CREATE_SUCCESS, user, user_type }
 }
 
 export const loginInit = () => {
@@ -31,8 +36,8 @@ export const loginFail = (error) => {
   return { type: actionTypes.LOGIN_FAIL, error }
 }
 
-export const loginSuccess = (user) => {
-  return { type: actionTypes.LOGIN_SUCCESS, user }
+export const loginSuccess = (user, user_type) => {
+  return { type: actionTypes.LOGIN_SUCCESS, user, user_type }
 }
 
 export const logOut = () => {
@@ -46,6 +51,7 @@ export const createUser = (userInfo) => {
 
 		if (!state.loggedIn) {
 			if (userInfo.employer && !userInfo.employee) {
+				// employer auth
 				try {
 					await db.employer.add(userInfo)
 					const response = await db.employer.authenticate({
@@ -53,10 +59,28 @@ export const createUser = (userInfo) => {
 						password: userInfo.password,
 					})
 					const user = response.data
-					dispatch(createUserSuccess(user))
+					dispatch(createUserSuccess(user, user_types.employer))
 				} catch (e) {
 					dispatch(createUserFail(e))
 				}
+
+			} else if (userInfo.employee && !userInfo.employer) {
+				// employee auth
+				try {
+					await db.employee.add(userInfo)
+					const response = await db.employee.authenticate({
+						email: userInfo.email,
+						phone_number: userInfo.phone_number,
+						password: userInfo.password,
+					})
+					const user = response.data
+					dispatch(createUserSuccess(user, user_types.employee))
+				} catch (e) {
+					dispatch(createUserFail(e))
+				}
+
+			} else {
+				dispatch(createUserFail('Something went wrong'))
 			}
 		} else {
 			dispatch(createUserFail('Already logged in'))
@@ -68,19 +92,36 @@ export const loginUser = (creds) => {
 	return async (dispatch, getState) => {
 		dispatch(loginInit())
 		const state = getState()
-
 		if (!state.loggedIn) {
-			// TODO: add employee login handling
+			let employer = null
+			let employee = null
+
 			try {
-				const response = await db.employer.authenticate({
-					email: creds.email,
+				const employerResponse = await db.employer.authenticate({
+					email: creds.username,
+					phone_number: creds.username,
 					password: creds.password,
 				})
-				const user = response.data
-				dispatch(loginSuccess(user))
-			} catch (e) {
-				dispatch(loginFail(e))
+				employer = employerResponse.data
+			} catch (e) {}
+			
+			try {
+				const employeeResponse = await db.employee.authenticate({
+					email: creds.username,
+					phone_number: creds.username,
+					password: creds.password,
+				})
+				employee = employeeResponse.data
+			} catch (e) {}
+			
+			if (employer) {
+				dispatch(loginSuccess(employer, user_types.employer))
+			} else if (employee) {
+				dispatch(loginSuccess(employee, user_types.employee))
+			} else {
+				dispatch(loginFail('Unable to login'))
 			}
+
 		} else {
 			dispatch(loginFail('Already logged in'))
 		}
