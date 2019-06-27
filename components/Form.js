@@ -30,7 +30,7 @@ class Form extends Component {
 			if (field.req == true && (typeof(this.state[field.name]) == 'undefined' || this.state[field.name] == '')) {
 				filled_in = false
 				errors[field.name] = true
-			} else if (typeof(field.validator) !== 'undefined' && field.validator(this.state[field.name]) == false) {
+			} else if (this.state[field.name] != '' && typeof(field.validator) !== 'undefined' && field.validator(this.state[field.name]) == false) {
 				filled_in = false
 				errors[field.name] = true
 			}

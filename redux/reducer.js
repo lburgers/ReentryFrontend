@@ -3,6 +3,7 @@ import { actionTypes } from './actions'
 export const initialState = {
 	loggedIn: false,
 	user: null,
+  user_type: null,
   isCreatingAccount: false,
   errorCreatingAccount: null,
   isLoggingIn: false,
@@ -19,6 +20,7 @@ const reducer = (state = initialState, action) => {
         errorCreatingAccount: null,
         loggedIn: false,
         user: null,
+        user_type: null,
       }
     case actionTypes.CREATE_FAIL:
       return {
@@ -32,6 +34,7 @@ const reducer = (state = initialState, action) => {
         isCreatingAccount: false,
         errorCreatingAccount: false,
         user: action.user,
+        user_type: action.user_type,
         loggedIn: true,
       }
     case actionTypes.LOGIN_INIT:
@@ -39,6 +42,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         loggedIn: false,
         user: null,
+        user_type: null,
         isLoggingIn: false,
         errorLoggingIn: null,
       }
@@ -54,6 +58,7 @@ const reducer = (state = initialState, action) => {
         isLoggingIn: false,
         errorLoggingIn: false,
         user: action.user,
+        user_type: action.user_type,
         loggedIn: true,
       }
 

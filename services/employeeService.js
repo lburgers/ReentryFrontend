@@ -3,7 +3,7 @@ import config from "../config.json"
 
 import { loadState } from '../store'
 
-const base_url = config.api_url + '/employers/'
+const base_url = config.api_url + '/employees/'
 
 const authHeader = () => {
     // return authorization header with jwt token
@@ -62,17 +62,17 @@ const get = async (id) => {
 	}
 }
 
-const authenticate = async ({email, password}) => {
+const authenticate = async ({email, phone_number, password}) => {
 	try {
 		axios.defaults.baseURL = base_url
-		const response = await axios.post('authenticate', {email, password})
+		const response = await axios.post('authenticate', {email, phone_number, password})
 		return response
 	} catch (e) {
 		throw e
 	}
 }
 
-const employerService = {
+const employeeService = {
 	add,
 	update,
 	delete: _delete,
@@ -80,4 +80,4 @@ const employerService = {
 	authenticate,
 }
 
-export default employerService
+export default employeeService

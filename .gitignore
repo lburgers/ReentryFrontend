@@ -1,3 +1,6 @@
+# node files
 node_modules/
 .next/
+
+# config files
 config.json

@@ -3,17 +3,17 @@ import { bindActionCreators } from "redux";
 import withLayout from '../components/Layout';
 import MultiForm from '../components/MultiForm';
 import colors from '../lib/colors'
-import employerSignup from '../lib/forms/employerSignup'
+import userSignup from '../lib/forms/userSignup'
 import { createUser } from '../redux/actions'
 
 
 const SignUp = (props) => (
 	<div className="container">
 		<div className="box">
-			<MultiForm forms={employerSignup}
+			{!props.loggedIn && <MultiForm forms={userSignup}
                  onSubmit={(user) => props.createUser(user)}
-                 loading={props.isCreatingAccount}
-      />
+                 disabled={props.loggedIn || props.isCreatingAccount}
+      />}
 		</div>
     <style jsx>{`
       .container { 
@@ -38,6 +38,7 @@ const SignUp = (props) => (
 const mapStateToProps = state => {
     return {
         isCreatingAccount: state.isCreatingAccount,
+        loggedIn: state.loggedIn,
     };
 };
 
