@@ -3,7 +3,7 @@ import config from "../config.json"
 
 import { loadState } from '../store'
 
-const base_url = config.api_url + '/employees/'
+const base_url = config.api_url + '/requests/'
 
 const authHeader = () => {
     // return authorization header with jwt token
@@ -62,34 +62,41 @@ const get = async (id) => {
 	}
 }
 
-const search = async (query) => {
+const getAll = async ({id, user_type}) => {
 	try {
 		axios.defaults.baseURL = base_url
 		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.get('/search?q=' + query)
+		const response = await axios.get(`getAll?${user_type}_id=${id}`)
 		return response.data
 	} catch (e) {
 		throw e
 	}
 }
 
-const authenticate = async ({email, phone_number, password}) => {
+const viewForm = async({id, token, type}) => {
 	try {
 		axios.defaults.baseURL = base_url
-		const response = await axios.post('authenticate', {email, phone_number, password})
-		return response
+		axios.defaults.headers.common['Authorization'] = !!token ? token : authHeader()['Authorization'];
+		const response = await axios.get(`viewForm?id=${id}&type=${type}`, {
+            responseType: 'arraybuffer',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/pdf'
+            }
+        })
+		return response.data
 	} catch (e) {
 		throw e
 	}
 }
 
-const employeeService = {
+const requestService = {
 	add,
 	update,
 	delete: _delete,
 	get,
-	search,
-	authenticate,
+	getAll,
+	viewForm,
 }
 
-export default employeeService
+export default requestService

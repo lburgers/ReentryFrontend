@@ -8,6 +8,8 @@ export const initialState = {
   errorCreatingAccount: null,
   isLoggingIn: false,
   errorLoggingIn: null,
+  isCreatingRequest: false,
+  errorCreatingRequest: null,
 }
 
 // REDUCERS
@@ -36,6 +38,24 @@ const reducer = (state = initialState, action) => {
         user: action.user,
         user_type: action.user_type,
         loggedIn: true,
+      }
+    case actionTypes.CREATE_REQUEST_INIT:
+      return {
+        ...state,
+        isCreatingRequest: true,
+        errorCreatingRequest: null,
+      }
+    case actionTypes.CREATE_REQUEST_FAIL:
+      return {
+        ...state,
+        isCreatingRequest: false,
+        errorCreatingRequest: action.error,
+      }
+    case actionTypes.CREATE_REQUEST_SUCCESS:
+      return {
+        ...state,
+        isCreatingRequest: false,
+        errorCreatingRequest: false,
       }
     case actionTypes.LOGIN_INIT:
       return {

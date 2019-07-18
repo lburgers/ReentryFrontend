@@ -14,7 +14,7 @@ const persistentFields = {
 // load to local storage
 export const loadState = () => {
   try {
-    let serializedState = localStorage.getItem('reduxState');
+    let serializedState = localStorage.getItem('reduxState'); // TODO: special app id
     if (serializedState === null) {
       return undefined;
     }

@@ -14,7 +14,9 @@ const Input = (props) => (
 		  font-size: 13px;
 		  line-height: 30px;
 		  border-width: 0 0 1px 0;
-		  border-color: ${props.error ? 'red' : colors.black};
+		  border-color: ${props.error ? 'red' : colors.darkGrey};
+		  font-size: 15px;
+		  font-family: Avenir-Light;
 		  color: ${props.error ? 'red' : colors.blue};
 		}
     `}</style>
