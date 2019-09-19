@@ -7,6 +7,7 @@ import colors from '../lib/colors'
 import requestForm from '../lib/forms/createRequest'
 import { createRequest } from '../redux/actions'
 
+console.log(requestForm)
 
 const CreateRequest = (props) => (
 	<div className="container">

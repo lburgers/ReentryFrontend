@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from "redux";
+import Router, { withRouter } from 'next/router';
 import withLayout from '../components/Layout';
 import MultiForm from '../components/MultiForm';
 import colors from '../lib/colors'
@@ -11,7 +12,7 @@ const SignUp = (props) => (
 	<div className="container">
 		<div className="box">
 			{!props.loggedIn && <MultiForm forms={userSignup}
-                 onSubmit={(user) => props.createUser(user)}
+                 onSubmit={(user) => props.createUser(user, props.router.query.goTo)}
                  disabled={props.loggedIn || props.isCreatingAccount}
       />}
 		</div>
@@ -54,4 +55,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withLayout(SignUp))
+)(withRouter(withLayout(SignUp)))

@@ -1,7 +1,10 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from "redux";
+import Router, { withRouter } from 'next/router';
+import Link from 'next/link';
 import withLayout from '../components/Layout';
 import MultiForm from '../components/MultiForm';
+import Button from '../components/Button';
 import colors from '../lib/colors'
 import login from '../lib/forms/login'
 
@@ -10,13 +13,29 @@ import { loginUser } from '../redux/actions'
 // TODO: add incorrect information handling
 // TODO: add success handling
 
+const signUpRoute = (props) => {
+  const goTo = props.router.query.goTo
+  if (!!goTo) {
+    return '/signup?goTo=' + goTo
+  }
+  return '/signup'
+}
+
 const Login = (props) => (
 	<div className="container">
 		<div className="box">
 			<MultiForm forms={login}
-                 onSubmit={props.loginUser}
+                 onSubmit={(creds) => props.loginUser(creds, props.router.query.goTo)}
                  loading={props.isLoggingIn}
       />
+      <span>or</span>
+      <div className="sign-up-button">
+        <Link href={signUpRoute(props)}>
+          <Button primary={true}
+                  title={'Sign up'}
+          />
+        </Link>
+      </div>
 		</div>
     <style jsx>{`
       .container { 
@@ -31,8 +50,14 @@ const Login = (props) => (
     		background: ${colors.white};
     		box-shadow: 0 0 5px 1px ${colors.shadow};
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+      }
+      .sign-up-button {
+        margin-top: 10px;
+        width: 30vw;
+        height: 25px;
       }
     `}</style>
 	</div>
@@ -56,4 +81,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withLayout(Login))
+)(withRouter(withLayout(Login)))

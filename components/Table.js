@@ -29,7 +29,7 @@ const Table = (props) => {
 					<span className='refund'>{entry[2]}</span>
 				</div>
 				<div className={"contact-button"} >
-					<Link href={props.buttonLink + '?id=' + entry[3]} as={props.buttonLink + '/' + entry[3]}>
+					<Link href={props.buttonLink + '?id=' + entry[3]}>
 						<Button title={props.buttonText} primary={true}/>
 					</Link>
 				</div>

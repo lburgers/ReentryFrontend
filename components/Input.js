@@ -8,6 +8,7 @@ const Input = (props) => (
   	/>
 	<style jsx>{`
 		.container {
+		  width: 100%;
 		}
 		input {
 		  width: 100%;

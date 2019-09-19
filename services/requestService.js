@@ -1,5 +1,5 @@
 import axios from "axios"
-import config from "../config.json"
+import config from "../config.js"
 
 import { loadState } from '../store'
 
@@ -24,6 +24,17 @@ const add = async (params) => {
 		axios.defaults.baseURL = base_url
 		const response = await axios.post('create', params)
 		return response
+	} catch (e) {
+		throw e
+	}
+}
+
+const sign = async (id, type) => {
+	try {
+		axios.defaults.baseURL = base_url
+		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+		const response = await axios.post('sign', {id, type})
+		return response.data
 	} catch (e) {
 		throw e
 	}
@@ -97,6 +108,7 @@ const requestService = {
 	get,
 	getAll,
 	viewForm,
+	sign,
 }
 
 export default requestService

@@ -86,7 +86,7 @@ export const createRequest = (requestInfo, employee_id) => {
 	}
 }
 
-export const createUser = (userInfo) => {
+export const createUser = (userInfo, goTo='/app') => {
 	return async (dispatch, getState) => {
 		dispatch(createUserInit())
 		const state = getState()
@@ -101,7 +101,7 @@ export const createUser = (userInfo) => {
 					})
 					const user = response.data
 					dispatch(createUserSuccess(user, user_types.employer))
-					Router.push('/app')
+					Router.push(goTo)
 				} catch (e) {
 					dispatch(createUserFail(e))
 				}
@@ -117,7 +117,7 @@ export const createUser = (userInfo) => {
 					})
 					const user = response.data
 					dispatch(createUserSuccess(user, user_types.employee))
-					Router.push('/app')
+					Router.push(goTo)
 				} catch (e) {
 					dispatch(createUserFail(e))
 				}
@@ -131,7 +131,7 @@ export const createUser = (userInfo) => {
 	}
 }
 
-export const loginUser = (creds) => {
+export const loginUser = (creds, goTo='/app') => {
 	return async (dispatch, getState) => {
 		dispatch(loginInit())
 		const state = getState()
@@ -158,17 +158,17 @@ export const loginUser = (creds) => {
 			} catch (e) {}
 			
 			if (employer) {
-				Router.push('/app')
+				Router.push(goTo)
 				dispatch(loginSuccess(employer, user_types.employer))
 			} else if (employee) {
-				Router.push('/app')
+				Router.push(goTo)
 				dispatch(loginSuccess(employee, user_types.employee))
 			} else {
 				dispatch(loginFail('Unable to login'))
 			}
 
 		} else {
-			Router.push('/app')
+			Router.push(goTo)
 			dispatch(loginFail('Already logged in'))
 		}
 	}

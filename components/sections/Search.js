@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import Router from 'next/router';
 import Table from '../Table';
+import Button from '../Button';
 import Input from '../Input';
 import db from '../../services/db'
 
@@ -29,10 +31,18 @@ class SearchSection extends Component {
 		return (
 		<div>
 			<div className='search-bar'>
-				<Input placeholder={'Search by name, city, state, or zipcode'}
-					   value={this.state.query}
-					   onChange={this.search}
-				/>
+				<div style={{display: 'flex', width: '85%'}}>
+					<Input placeholder={'Search by name, city, state, or zipcode'}
+						   value={this.state.query}
+						   onChange={this.search}
+					/>
+				</div>
+				<div className='invite-button'>
+					<Button primary={true}
+							title={"Invite Applicant"}
+							onClick={() => Router.push(`/createRequest?id=${this.props.id}&offnetwork=true`)}
+					/> 
+				</div>
 			</div>
 			<Table headers={['Name', 'City', 'Potential Refund']}
 				   entries={this.state.users}
@@ -42,6 +52,13 @@ class SearchSection extends Component {
 			<style jsx>{`
 			  .search-bar {
 			  	margin-top: 25px;
+			  	display: flex;
+			  	flex-direction: row;
+			  	justify-content: space-between;
+			  }
+			  .invite-button {
+		  		width: 130px;
+		  		height: 30px;
 			  }
 		  `}</style>
 		</div>

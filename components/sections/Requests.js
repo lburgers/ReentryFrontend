@@ -51,7 +51,7 @@ class RequestsSection extends Component {
 			<Table headers={['Form name', 'Description', 'Status']}
 				   entries={this.state.requests}
 				   buttonText="Open"
-				   buttonLink={'/requests'}
+				   buttonLink={'/request'}
 			/>
 			<style jsx>{`
 			  .search-bar {

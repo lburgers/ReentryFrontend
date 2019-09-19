@@ -24,7 +24,7 @@ const status_from_stage = {
 	'3': 'Completed',
 }
 
-const formReady = (state, other_user_type, viewRequest, deleteRequest) => {
+const formReady = (state, other_user_type, viewRequest, signRequest, deleteRequest) => {
 	return (
 	<div>
 		<div className="request-header">
@@ -37,21 +37,39 @@ const formReady = (state, other_user_type, viewRequest, deleteRequest) => {
 			<div className="request-row">
 				<span>{description_from_stage[state.request.stage]}</span>
 			</div>
-			{state.request.stage > 0 && 
+			{state.request.stage > 0 &&
 			<div>
-				<div className="view-form-button">
-					<Button
-						title={"View 8850 Form"}
-						primary={true}
-						onClick={() => viewRequest('8850')}
-					/>
+				<div style={{display: 'flex', 'flexDirection': 'row'}}>
+					<div className="view-form-button">
+						<Button
+							title={"View 8850 Form"}
+							primary={true}
+							onClick={() => viewRequest('8850')}
+						/>
+					</div>
+					<div className="view-form-button">
+						<Button
+							title={"Sign 8850 Form"}
+							primary={true}
+							onClick={() => signRequest('8850')}
+						/>
+					</div>
 				</div>
-				<div className="view-form-button">
-					<Button
-						title={"View 9061 Form"}
-						primary={true}
-						onClick={() => viewRequest('9061')}
-					/>
+				<div style={{display: 'flex', 'flexDirection': 'row'}}>
+					<div className="view-form-button">
+						<Button
+							title={"View 9061 Form"}
+							primary={true}
+							onClick={() => viewRequest('9061')}
+						/>
+					</div>
+					<div className="view-form-button">
+						<Button
+							title={"Sign 9061 Form"}
+							primary={true}
+							onClick={() => signRequest('9061')}
+						/>
+					</div>
 				</div>
 			</div>}
 			<div className="view-form-button">
@@ -80,6 +98,7 @@ const formReady = (state, other_user_type, viewRequest, deleteRequest) => {
 				width: 140px;
 				height: 30px;
 				margin-bottom: 15px;
+				margin-right: 15px;
 			}
 			.request-row {
 				display: flex;
@@ -133,6 +152,12 @@ class Request extends React.Component {
 		Router.push(`/viewform?id=${this.props.router.query.id}&type=${type}&token=${this.props.user.token}`)
 	}
 
+	signRequest = (type) => {
+		db.request.sign(this.props.router.query.id, type).then(data => {
+			Router.push(data.url)
+		}).catch(error => this.setState({ error }))
+	}
+
 	deleteRequest = () => {
 			if (window.confirm('Are you sure? this will delete the request from your employer.')) {
 				db.request.delete(this.props.router.query.id)
@@ -158,10 +183,11 @@ class Request extends React.Component {
 	}
 
 	render() {
+		console.log(this.state)
 		const other_user_type = this.props.user_type == 'employer' ? 'employee' : 'employer'
 		return(
 		<div className="application">
-			{this.state.error == null && (this.state.request.stage > 0 || this.props.user_type == 'employer') && formReady(this.state, other_user_type, this.viewRequest, this.deleteRequest)}
+			{this.state.error == null && (this.state.request.stage > 0 || this.props.user_type == 'employer') && formReady(this.state, other_user_type, this.viewRequest, this.signRequest, this.deleteRequest)}
 			{this.state.error == null && this.state.request.stage < 1 && this.props.user_type == 'employee' &&
 				<div style={{display: 'flex', 'justifyContent': 'center'}}>
 			      <MultiForm forms={acceptRequest(this.state.request[other_user_type + '_name'])}
