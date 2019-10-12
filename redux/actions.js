@@ -10,6 +10,9 @@ export const actionTypes = {
 	'CREATE_INIT': 'CREATE_INIT',
 	'CREATE_SUCCESS': 'CREATE_SUCCESS',
 	'CREATE_FAIL': 'CREATE_FAIL',
+	'UPDATE_INIT': 'UPDATE_INIT',
+	'UPDATE_SUCCESS': 'UPDATE_SUCCESS',
+	'UPDATE_FAIL': 'UPDATE_FAIL',
 	'CREATE_REQUEST_INIT': 'CREATE_REQUEST_INIT',
 	'CREATE_REQUEST_SUCCESS': 'CREATE_REQUEST_SUCCESS',
 	'CREATE_REQUEST_FAIL': 'CREATE_REQUEST_FAIL',
@@ -17,6 +20,7 @@ export const actionTypes = {
 	'LOGIN_SUCCESS': 'LOGIN_SUCCESS',
 	'LOGIN_FAIL': 'LOGIN_FAIL',
 	'LOGOUT': 'LOGOUT',
+	'SWITCH_PAGE': 'SWITCH_PAGE',
 }
 
 // ACTIONS
@@ -30,6 +34,18 @@ export const createUserFail = (error) => {
 
 export const createUserSuccess = (user, user_type) => {
   return { type: actionTypes.CREATE_SUCCESS, user, user_type }
+}
+
+export const updateUserInit = () => {
+  return { type: actionTypes.UPDATE_INIT }
+}
+
+export const updateUserFail = (error) => {
+  return { type: actionTypes.UPDATE_FAIL, error }
+}
+
+export const updateUserSuccess = (user) => {
+  return { type: actionTypes.UPDATE_SUCCESS, user }
 }
 
 export const createRequestInit = () => {
@@ -60,6 +76,10 @@ export const logOut = () => {
   return { type: actionTypes.LOGOUT }
 }
 
+export const switchPage = (page) => {
+  return { type: actionTypes.SWITCH_PAGE, page }
+}
+
 export const createRequest = (requestInfo, employee_id) => {
 	return async (dispatch, getState) => {
 		const state = getState()
@@ -86,12 +106,14 @@ export const createRequest = (requestInfo, employee_id) => {
 	}
 }
 
-export const createUser = (userInfo, goTo='/app') => {
+export const createUser = (userInfo, goTo='/app', user_type) => {
 	return async (dispatch, getState) => {
+		console.log('here')
 		dispatch(createUserInit())
 		const state = getState()
 		if (!state.loggedIn) {
-			if (userInfo.employer && !userInfo.employee) {
+			console.log(userInfo)
+			if (user_type == 'employer') {
 				// employer auth
 				try {
 					await db.employer.add(userInfo)
@@ -106,7 +128,7 @@ export const createUser = (userInfo, goTo='/app') => {
 					dispatch(createUserFail(e))
 				}
 
-			} else if (userInfo.employee && !userInfo.employer) {
+			} else if (user_type == 'employee') {
 				// employee auth
 				try {
 					await db.employee.add(userInfo)
@@ -170,6 +192,26 @@ export const loginUser = (creds, goTo='/app') => {
 		} else {
 			Router.push(goTo)
 			dispatch(loginFail('Already logged in'))
+		}
+	}
+}
+
+export const updateUser = (params) => {
+	return async (dispatch, getState) => {
+		dispatch(updateUserInit())
+		const state = getState()
+
+		if (state.loggedIn) {
+			if (state.user_type === 'employer') {
+				// employer update
+				try {
+					console.log('udpateing')
+					const data = await db.employer.update(state.user._id, params)
+					dispatch(updateUserSuccess(data))
+				} catch (e) {
+					dispatch(updateUserFail(e))
+				}
+			}
 		}
 	}
 }

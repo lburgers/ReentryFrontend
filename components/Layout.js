@@ -1,49 +1,191 @@
-import Header from './Header'
+import { connect } from 'react-redux'
+import { bindActionCreators } from "redux";
+import Link from 'next/link'
 import colors from "../lib/colors"
+import Button from './Button'
+
+import { logOut, switchPage } from '../redux/actions'
 
 
 const withLayout = Page => {
-  return (props) => (
-  <div>
-    <Header />
-    <div className="page">
-	    <Page {...props} />
-	</div>
+      const Layout = (props) => (
+      <div>
+      	<div className="header">
+            <div className="left-header">
+          		<img src={"/static/creditclaim.svg"} />
+                {props.loggedIn && 
+                    <div className="menu-items">
+                        <div className={`${props.activeSection == 'candidates' ? 'active-': ''}menu-item`}
+                             onClick={() => props.switchPage('candidates')}
+                        >
+                            Candidates
+                        </div>
+                        <div className={`${props.activeSection == 'info' ? 'active-': ''}menu-item`}
+                             onClick={() => props.switchPage('info')}
+                        >
+                            Your Info
+                        </div>
+                    </div>
+                }
+            </div>
+      		<div className={"header-buttons"}>
+                {!props.loggedIn && 
+                    [
+                    <Link href={'/login'} key={1}>
+                        <div className={"login-button"}>
+                            <h1>Login</h1>
+                        </div>
+                    </Link>,
+                    <Link href={'/signup'} key={2}>
+                        <div className={"getstarted-button"}>
+                            <Button title={"Get Started"}
+                                    height={50}
+                                    width={170}
+                            />
+                        </div>
+                    </Link>]
+                }
+                {props.loggedIn && 
+                    <div className={"logout-button"}
+                         onClick={() => props.logOut()}>
+                         <h1>Logout</h1>
+                    </div>
+                }
+    	  	</div>
+      	</div>
+      	<div className={"content"}>
+    	  	<div className={"background-rectangle"}/>
 
-    <style jsx global>{`
-	  .application { 
-        height: 100vh;
-        left:0;
-        right:0;
-	  	margin: 150px 65px;
-	  	padding: 45px 60px;
-      	border-radius: 5px;
-		background-color: ${colors.white};
-		box-shadow: 0 2px 4px 0 ${colors.shadow};
-	  }
-		body { 
-			margin: 0px;
-		}
-		.page {
-			margin-top: 78px;
-		}
-		input:focus,
-		select:focus,
-		textarea:focus,
-		button:focus {
-		    outline: none;
-		}
-		h2,h3,input,span{
-			font-family: Avenir-Medium;
-		}
-		a,p {
-			font-family: Avenir-Light;
-		}
-		h1 {
-			font-family: Avenir-Medium;
-		}
-    `}</style>
-  </div>
-)};
+    	    <div className="modal">
+    		    <Page {...props} />
+    		</div>
+    	</div>
 
-export default withLayout;
+        <style jsx global>{`
+
+            .left-header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .menu-items {
+                margin-left: 60px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .menu-item {
+                font-size: 18px;
+                font-family: Avenir-Medium;
+                color: ${colors.primary};
+                margin-right: 18px;
+            }
+            .active-menu-item {
+                color: ${colors.red};
+                font-size: 18px;
+                font-family: Avenir-Black;
+                margin-right: 18px;
+            }
+
+        	.header {
+        		display: flex;
+        		flex-direction: row;
+        		justify-content: space-between;
+        		align-items: center;
+        		padding: 36px 40px;
+        	}
+        	.header-buttons {
+        		display: flex;
+        		flex-direction: row;
+        		justify-content: space-between;
+        		align-items: center;
+        	}
+        	.login-button {
+        		height: 50px;
+        		color: ${colors.primary};
+        	}
+            .logout-button {
+                color: ${colors.primary};
+                font-size: 18px;
+                font-family: Avenir-Black;
+            }
+        	.getstarted-button {
+        		margin-left: 42px;
+        	}
+        	.content {
+        		display: flex;
+        		justify-content: center;
+        	}
+        	.background-rectangle {
+        		margin-top: 25px;
+        		height: 800px;
+        		width: 120%;
+        		background-color: ${colors.primary};
+        		transform: rotate(-1deg);
+        	}
+        	.modal {
+        		position: absolute;
+        		align-self: center;
+                background-color: ${colors.white};
+                padding: 70px;
+                border-radius: 20px;
+        	}
+
+    		body { 
+    			margin: 0px;
+    			-webkit-touch-callout: none;
+    			-webkit-user-select: none;
+    			-khtml-user-select: none;
+    			-moz-user-select: none;
+    			-ms-user-select: none;
+    			-o-user-select: none;
+    			user-select: none;
+    		}
+    		input:focus,
+    		select:focus,
+    		textarea:focus,
+    		button:focus {
+    		    outline: none;
+    		}
+    		h2,h3,input,span{
+    			font-family: Avenir-Medium;
+    		}
+    		a,p {
+    			font-family: Avenir-Light;
+    		}
+    		h1 {
+    			font-family: Avenir-Black;
+    			font-size: 18px;
+    		}
+        `}</style>
+      </div>
+    )
+
+    const mapStateToProps = state => {
+        return {
+            loggedIn: state.loggedIn,
+            activeSection: state.activeSection,
+        };
+    };
+
+    const mapDispatchToProps = dispatch => {
+        return bindActionCreators(
+            {
+              logOut,
+              switchPage,
+            },
+            dispatch
+        );
+    };
+
+    return connect(
+      mapStateToProps,
+      mapDispatchToProps
+    )(Layout)
+
+};
+
+export default withLayout
+

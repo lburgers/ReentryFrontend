@@ -12,29 +12,27 @@ class Button extends Component {
 
 	render() {
 		const props = this.props
-		let fontSize = this.state.pressedDown ? (props.fontSize || 18) - 1 : (props.fontSize || 18)
 		return (
 			<div className="container"
+				 disabled={props.disabled}
 				 onClick={props.onClick}
 				 onMouseDown={() => this.setState({pressedDown: true})}
 				 onMouseUp={() => this.setState({pressedDown: false})}>
-				<h1 className="title">{props.title}</h1>
+				<span className="title">{props.title}</span>
 				<style jsx>{`
 					.container {
+						border-radius: 3px;
+						display: flex;
+						height: 100%;
+						flex: 1;
 						opacity: ${this.state.pressedDown ? '0.8': '1.0'};
-			    		display: flex;
-			    		justify-content: center;
-			    		align-items: center;
-			    		width: ${props.width}px;
-			    		height: ${props.height}px;
-			    		border-radius: 8px;
-			    		background-color: ${colors.primary};
-			    		color: ${colors.white};
-
+						justify-content: center;
+						align-items: center;
+						background-color: ${props.primary ? colors.blue : colors.grey};
 					}
 					.title {
-						font-size: ${fontSize}px;
-						font-family: Avenir-Heavy;
+						color: ${colors.white};
+						font-size: ${this.state.pressedDown ? '11px': '13px'};
 					}
 			    `}</style>
 			</div>

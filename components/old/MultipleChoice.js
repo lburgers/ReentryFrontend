@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux'
+import Link from 'next/link'
 import colors from '../lib/colors'
 
 const Choice = (props) => (

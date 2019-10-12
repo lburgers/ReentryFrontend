@@ -1,62 +1,150 @@
 import React, { Component } from "react";
+import colors from '../lib/colors'
 import Form from './Form';
 import Button from './Button';
-import colors from '../lib/colors'
+
 
 
 class MultiForm extends Component {
 	constructor(props) {
-		super(props);
-		this.state = {
-			formIndex: 0,
-			response: {},
-		}
-		this.next = this.next.bind(this)
-		this.back = this.back.bind(this)
-		this.submit = this.submit.bind(this)
+	    super(props);
+	    this.state = {
+	      formState: {
+	        values: {},
+	        errors: {}
+	      }
+	    }
+	    this.mergeForms = this.mergeForms.bind(this)
+
+	    const allFields = [...props.form[0], ...props.form[1], ...props.form[2]]
+	    for (var i = 0; i < allFields.length; i++) {
+	      const field_name = allFields[i].name
+	      if ((props.initialState || {})[field_name]) {
+	        this.state.formState.values[field_name] = props.initialState[field_name]
+	        this.state.formState.errors[field_name] = false
+	      }
+	    }
 	}
 
-	next(form_values) {
-		const current_form = this.props.forms[this.state.formIndex]
-		let goTo = this.state.formIndex+1
-		if (current_form.type == 'choice') {
-			current_form.fields.map(form => {
-				if (form_values[form.name] == true) {
-					goTo = form.goTo
-				}
-			})
-		}
-		this.setState({
-			formIndex: goTo,
-			response: {...this.state.response, ...form_values}
-		})
+	mergeForms(newFormState) {
+	    const values = this.state.formState.values
+	    const errors = this.state.formState.errors
+
+
+	    this.setState({
+	      formState: {
+	        values: {...values, ...newFormState.values},
+	        errors: {...errors, ...newFormState.errors},
+	      }
+	    })
 	}
 
-	back() {
-		let goTo = this.state.formIndex-1
-		if (typeof(this.props.forms[this.state.formIndex].backTo) !== 'undefined') {
-			goTo = this.props.forms[this.state.formIndex].backTo
-		}
-		this.setState({formIndex: goTo})
-	}
+	submit() {
+	    const values = this.state.formState.values
+	    const errors = this.state.formState.errors
+	    const allFields = [...this.props.form[0], ...this.props.form[1], ...this.props.form[2]]
 
-	submit(form_values) {
-		// callback with state
-		if (!this.props.disabled) { // don't submit if still loading last request
-			this.props.onSubmit({...this.state.response, ...form_values})
-			this.setState({ response: {} })
-		}
-	}
+
+	    let error = false
+	    for (var i = 0; i < allFields.length; i++) {
+	      const fieldName = allFields[i].name
+
+	      if ((values[fieldName] || '').length == 0 ||
+	            errors[fieldName] != false) {
+
+	        if (fieldName != 'password' && fieldName != 'confirm_password') { // whitelist
+	          error = true
+	        }
+	        
+	      }
+	    }
+
+	    if ((values['password'] || '').length > 0 && values['password'] != values['confirm_password']) {
+	      error = true
+	    }
+
+	    if (!error) {
+	      const { confirm_password, ...userWithoutConfirm } = values
+	      this.props.successCallback(userWithoutConfirm)
+	    }
+}
+
 
 	render() {
 		return (
-			<Form {...this.props.forms[this.state.formIndex]}
-				  onSubmit={this.submit}
-				  onNext={this.next}
-				  onBack={this.back}
-			/>
-		)
+
+		      <div className="info-container">
+		        <h1 className="multiform-title">{this.props.title}</h1>
+
+		        <div className="multiform-container">
+		            <div className="multiform-column">
+		              
+		              <h1 className="multiform-subtitle">{this.props.headers[0]}</h1>
+		              <Form fields={this.props.form[0]}
+		                    onChange={this.mergeForms}
+		                    initialState={this.props.initialState}
+		              />
+		            </div>
+
+		            <div className="multiform-column">
+		              <h1 className="multiform-subtitle">{this.props.headers[1]}</h1>
+		              <Form fields={this.props.form[1]}
+		                    onChange={this.mergeForms}
+		                    initialState={this.props.initialState}
+		              />
+
+		              <div className="multiform-button">
+		                <Button title={this.props.disabled ? "Loading.." : "Save"}
+		                        onClick={() => this.submit()}
+		                        disabled={this.props.disabled}
+		                />
+		              </div>
+		            </div>
+
+		            <div className="multiform-column">
+		              <h1 className="multiform-subtitle">{this.props.headers[2]}</h1>
+		              <Form fields={this.props.form[2]}
+		                    onChange={this.mergeForms}
+		                    initialState={this.props.initialState}
+		              />
+		            </div>
+		            </div>
+				    <style jsx>{`
+
+			          .info-container { 
+			            display: flex;
+			            flex-direction: column;
+			          }
+			          .multiform-container { 
+			            display: flex;
+			            flex-direction: row;
+			            justify-content: space-between;
+			          }
+			          .multiform-column:nth-of-type(2n) {
+			            margin: 0 90px;
+			          }
+			          .multiform-title {
+			            color: ${colors.secondary};
+			            font-family: Avenir-Black;
+			            font-size: 24px;
+			            margin-bottom: 40px;
+			          }
+			          .multiform-subtitle {
+			            color: ${colors.secondary};
+			            font-family: Avenir-Black;
+			            font-size: 18px;
+			          }
+			          .multiform-button {
+			            margin-top: 45px;
+			          }
+
+
+				    `}</style>
+		        </div>
+
+			   	)
 	}
 }
+
 
 export default MultiForm
