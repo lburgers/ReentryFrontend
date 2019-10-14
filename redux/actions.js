@@ -80,7 +80,7 @@ export const switchPage = (page) => {
   return { type: actionTypes.SWITCH_PAGE, page }
 }
 
-export const createRequest = (requestInfo, employee_id) => {
+export const createRequest = (requestInfo) => {
 	return async (dispatch, getState) => {
 		const state = getState()
 		dispatch(createRequestInit())
@@ -88,7 +88,6 @@ export const createRequest = (requestInfo, employee_id) => {
 			try {
 				requestInfo = {
 					employer_id: state.user._id,
-					employee_id: employee_id,
 					stage: 0, // employee exists but has not yet accepted
 					...requestInfo,
 				}
@@ -96,7 +95,6 @@ export const createRequest = (requestInfo, employee_id) => {
 				dispatch(createRequestSuccess())
 				Router.push('/app')
 			} catch (e) {
-				Router.push(`/jobseeker/${employee_id}`)
 				dispatch(createRequestFail(e))
 			}
 		} else {

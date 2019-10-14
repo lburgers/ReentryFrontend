@@ -6,6 +6,7 @@ import Router from 'next/router';
 
 import Info from '../components/sections/info'
 import Candidates from '../components/sections/candidates'
+import Invite from '../components/sections/invite'
 
 
 class App extends Component {
@@ -25,8 +26,10 @@ class App extends Component {
       return <Info />
     } else if (this.props.loggedIn && this.props.activeSection == 'candidates') {
       return <Candidates />
+    } else if (this.props.loggedIn && this.props.activeSection == 'invite') {
+      return <Invite />
     } else {
-      return <div/>
+      return <div />
     }
   }
 }

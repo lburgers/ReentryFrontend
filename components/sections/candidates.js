@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import { connect } from 'react-redux'
 import { bindActionCreators } from "redux";
+import Router, { withRouter } from 'next/router';
+import db from '../../services/db'
 import Button from '../Button';
 import colors from '../../lib/colors'
+
+import { switchPage } from '../../redux/actions'
 
 const ProgressBar = (props) => {
   const progressWidth = (props.stage+1) * 235
@@ -28,10 +32,10 @@ const ProgressBar = (props) => {
 
   )
 }
-const Candidate = (request) => {
-  const formOne_stage = 0
+const Candidate = ({request, viewRequest}) => {
+  const formOne_stage = 2
   const formTwo_stage = 2
-
+  console.log(request)
   return  (
       <div className="candidate-container">
         <h1 className="candidate-title">{request.employee_name}</h1>
@@ -48,12 +52,12 @@ const Candidate = (request) => {
         <div className="table-row">
           <div className="form-title">Form 1</div>
           <ProgressBar stage={formOne_stage}/>
-          <Button title="Review" width={105} height={25} fontSize={12}/>
+          <Button title="Review" width={105} height={25} fontSize={12} onClick={() => viewRequest('8850')}/>
         </div>
         <div className="table-row">
           <div className="form-title">Form 2</div>
           <ProgressBar stage={formTwo_stage}/>
-          <Button title="Sign" width={105} height={25} fontSize={12}/>
+          <Button title="Sign" width={105} height={25} fontSize={12} onClick={() => viewRequest('9061')}/>
         </div>
 
         <style jsx>{`
@@ -103,16 +107,41 @@ class Candidates extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      requests: [],
     }
   }
 
+  componentWillMount() {
+    const other_user_type = this.props.user_type == 'employee' ? 'employer' : 'employee'
+
+    db.request.getAll({user_type: this.props.user_type, id: this.props.user._id})
+      .then( (requests) => {
+        this.setState({ requests })
+      }).catch(console.log)
+  }
+
+  viewRequest = (id) => (type) => {
+    Router.push(`/viewform?id=${id}&type=${type}&token=${this.props.user.token}`)
+  }
+
+  // TODO: empty state
+
   render() {
+
     return (
       <div className="candidates-container">
         <h1 className="candidates-title">Candidates</h1>
-        <Candidate employee_name="Lukas Burger" />
-        <Candidate employee_name="John Smith" />
 
+        { this.state.requests.map((request) => 
+            <Candidate key={request._id} request={request} viewRequest={this.viewRequest(request._id)} />
+          )
+        }
+        
+        <div className="invite-button">
+          <Button title="Invite Candidate" width={228} height={47} 
+                  onClick={() => this.props.switchPage("invite")}
+          />
+        </div>
         <style jsx>{`
           .candidates-container { 
           }
@@ -121,6 +150,10 @@ class Candidates extends Component {
             font-family: Avenir-Black;
             font-size: 24px;
             padding-bottom: 30px;
+          }
+          .invite-button {
+            display: flex;
+            justify-content: center;
           }
 
         `}</style>
@@ -133,12 +166,15 @@ class Candidates extends Component {
 
 const mapStateToProps = state => {
     return {
+        user_type: state.user_type,
+        user: state.user,
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return bindActionCreators(
         {
+          switchPage
         },
         dispatch
     );

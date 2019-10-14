@@ -78,6 +78,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         isCreatingRequest: false,
         errorCreatingRequest: false,
+        activeSection: 'candidates',
       }
     case actionTypes.LOGIN_INIT:
       return {

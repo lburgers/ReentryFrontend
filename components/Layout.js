@@ -119,6 +119,8 @@ const withLayout = Page => {
         		justify-content: center;
         	}
         	.background-rectangle {
+                position: absolute;
+                z-index: -1;
         		margin-top: 25px;
         		height: 800px;
         		width: 120%;
@@ -126,11 +128,12 @@ const withLayout = Page => {
         		transform: rotate(-1deg);
         	}
         	.modal {
-        		position: absolute;
         		align-self: center;
                 background-color: ${colors.white};
+                margin: 100px 0;
                 padding: 70px;
                 border-radius: 20px;
+                box-shadow: 0 2px 20px 0 rgba(8,69,61,0.05);
         	}
 
     		body { 
