@@ -106,11 +106,11 @@ export const createRequest = (requestInfo) => {
 
 export const createUser = (userInfo, goTo='/app', user_type) => {
 	return async (dispatch, getState) => {
-		console.log('here')
+
 		dispatch(createUserInit())
 		const state = getState()
 		if (!state.loggedIn) {
-			console.log(userInfo)
+
 			if (user_type == 'employer') {
 				// employer auth
 				try {
@@ -203,7 +203,7 @@ export const updateUser = (params) => {
 			if (state.user_type === 'employer') {
 				// employer update
 				try {
-					console.log('udpateing')
+
 					const data = await db.employer.update(state.user._id, params)
 					dispatch(updateUserSuccess(data))
 				} catch (e) {

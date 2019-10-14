@@ -33,9 +33,9 @@ const ProgressBar = (props) => {
   )
 }
 const Candidate = ({request, viewRequest}) => {
-  const formOne_stage = 2
-  const formTwo_stage = 2
-  console.log(request)
+  const formOne_stage = request.stage
+  const formTwo_stage = request.stage
+
   return  (
       <div className="candidate-container">
         <h1 className="candidate-title">{request.employee_name}</h1>
@@ -52,12 +52,12 @@ const Candidate = ({request, viewRequest}) => {
         <div className="table-row">
           <div className="form-title">Form 1</div>
           <ProgressBar stage={formOne_stage}/>
-          <Button title="Review" width={105} height={25} fontSize={12} onClick={() => viewRequest('8850')}/>
+          <Button title={formOne_stage == 0 ? 'Remind' : 'Sign'} width={105} height={25} fontSize={12} onClick={() => viewRequest('8850')}/>
         </div>
         <div className="table-row">
           <div className="form-title">Form 2</div>
           <ProgressBar stage={formTwo_stage}/>
-          <Button title="Sign" width={105} height={25} fontSize={12} onClick={() => viewRequest('9061')}/>
+          <Button title={formTwo_stage == 0 ? 'Remind' : 'Sign'} width={105} height={25} fontSize={12} onClick={() => viewRequest('9061')}/>
         </div>
 
         <style jsx>{`
@@ -116,6 +116,11 @@ class Candidates extends Component {
 
     db.request.getAll({user_type: this.props.user_type, id: this.props.user._id})
       .then( (requests) => {
+
+        requests.sort(function(a,b){
+          return new Date(b.createdDate) - new Date(a.createdDate);
+        });
+
         this.setState({ requests })
       }).catch(console.log)
   }
@@ -124,17 +129,18 @@ class Candidates extends Component {
     Router.push(`/viewform?id=${id}&type=${type}&token=${this.props.user.token}`)
   }
 
-  // TODO: empty state
-
   render() {
 
     return (
       <div className="candidates-container">
         <h1 className="candidates-title">Candidates</h1>
 
-        { this.state.requests.map((request) => 
+        { this.state.requests.length > 0 && this.state.requests.map((request) => 
             <Candidate key={request._id} request={request} viewRequest={this.viewRequest(request._id)} />
           )
+        }
+        { this.state.requests.length == 0 &&
+          <Candidate key={0} request={{employee_name: 'Loading...', stage: 0}} viewRequest={() => {}} />
         }
         
         <div className="invite-button">

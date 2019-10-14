@@ -5,19 +5,39 @@ import withLayout from '../components/Layout';
 import MultiForm from '../components/MultiForm';
 import colors from '../lib/colors'
 import { employer } from '../lib/forms/employer'
+import { employee } from '../lib/forms/employee'
 import { createUser } from '../redux/actions'
 
-// TODO: can't get here if logged out
 
-const SignUp = (props) => (
-  <MultiForm initialState={{}}
-             form={employer}
-             successCallback={(user) => props.createUser(user, props.router.query.goTo, 'employer')}
-             disabled={props.loggedIn || props.isCreatingAccount}
-             title={'Get Started'}
-             headers={['Company', 'Address', 'Account']}
-  />
-);
+const SignUp = (props) => {
+
+  if (props.loggedIn) {
+    Router.push('/app')
+  }
+
+  // if employee flow show different signup form
+  if (props.router.query.type == 'employee') {
+    return (
+      <MultiForm initialState={{}}
+                 form={employee}
+                 successCallback={(user) => props.createUser(user, props.router.query.goTo, 'employee')}
+                 disabled={props.loggedIn || props.isCreatingAccount}
+                 title={'Get Started'}
+                 headers={['Personal', 'Address', 'Account']}
+      />
+    )
+  } else {
+    return (
+      <MultiForm initialState={{}}
+                 form={employer}
+                 successCallback={(user) => props.createUser(user, props.router.query.goTo, 'employer')}
+                 disabled={props.loggedIn || props.isCreatingAccount}
+                 title={'Get Started'}
+                 headers={['Company', 'Address', 'Account']}
+      />
+    )
+  }
+}
 
 const mapStateToProps = state => {
     return {
