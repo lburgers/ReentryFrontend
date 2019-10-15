@@ -39,11 +39,9 @@ class MyApp extends App {
   componentWillMount() {
     // check for unauthorized calls and logout
     const UNAUTHORIZED = 401;
-    console.log('adding intercept')
-    instance.interceptors.response.use(
+    this.interceptor = instance.interceptors.response.use(
       response => response,
       error => {
-        console.log('tracking error', error)
         const { status } = error.response;
         if (status === UNAUTHORIZED) {
           this.props.store.dispatch(logOut());
@@ -53,6 +51,10 @@ class MyApp extends App {
      }
     );
 
+  }
+
+  componentWillUnmount() {
+    instance.interceptors.request.eject(this.interceptor);
   }
 
   render () {

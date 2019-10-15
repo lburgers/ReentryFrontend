@@ -6,62 +6,50 @@ import Button from './Button'
 
 import { logOut, switchPage } from '../redux/actions'
 
-
-const withLayout = Page => {
-      const Layout = (props) => (
-      <div>
-      	<div className="header">
-            <div className="left-header">
-          		<img src={"/static/creditclaim.svg"} />
-                {props.loggedIn && 
-                    <div className="menu-items">
-                        <div className={`${props.activeSection == 'candidates' ? 'active-': ''}menu-item`}
-                             onClick={() => props.switchPage('candidates')}
-                        >
-                            Candidates
-                        </div>
-                        <div className={`${props.activeSection == 'info' ? 'active-': ''}menu-item`}
-                             onClick={() => props.switchPage('info')}
-                        >
-                            Your Info
-                        </div>
+export const Header = (props) => (
+    <div className="header">
+        <div className="left-header">
+            <img src={"/static/creditclaim.svg"} />
+            {props.loggedIn && 
+                <div className="menu-items">
+                    <div className={`${props.activeSection == 'candidates' ? 'active-': ''}menu-item`}
+                         onClick={() => props.switchPage('candidates')}
+                    >
+                        Candidates
                     </div>
-                }
-            </div>
-      		<div className={"header-buttons"}>
-                {!props.loggedIn && 
-                    [
-                    <Link href={'/login'} key={1}>
-                        <div className={"login-button"}>
-                            <h1>Login</h1>
-                        </div>
-                    </Link>,
-                    <Link href={'/signup'} key={2}>
-                        <div className={"getstarted-button"}>
-                            <Button title={"Get Started"}
-                                    height={50}
-                                    width={170}
-                            />
-                        </div>
-                    </Link>]
-                }
-                {props.loggedIn && 
-                    <div className={"logout-button"}
-                         onClick={() => props.logOut()}>
-                         <h1>Logout</h1>
+                    <div className={`${props.activeSection == 'info' ? 'active-': ''}menu-item`}
+                         onClick={() => props.switchPage('info')}
+                    >
+                        Your Info
                     </div>
-                }
-    	  	</div>
-      	</div>
-      	<div className={"content"}>
-    	  	<div className={"background-rectangle"}/>
-
-    	    <div className="modal">
-    		    <Page {...props} />
-    		</div>
-    	</div>
-
-        <style jsx global>{`
+                </div>
+            }
+        </div>
+        <div className={"header-buttons"}>
+            {!props.loggedIn && 
+                [
+                <Link href={'/login'} key={1}>
+                    <div className={"login-button"}>
+                        <h1>Login</h1>
+                    </div>
+                </Link>,
+                <Link href={'/signup'} key={2}>
+                    <div className={"getstarted-button"}>
+                        <Button title={"Get Started"}
+                                height={50}
+                                width={170}
+                        />
+                    </div>
+                </Link>]
+            }
+            {props.loggedIn && 
+                <div className={"logout-button"}
+                     onClick={() => props.logOut()}>
+                     <h1>Logout</h1>
+                </div>
+            }
+        </div>
+        <style jsx >{`
 
             .left-header {
                 display: flex;
@@ -89,32 +77,51 @@ const withLayout = Page => {
                 margin-right: 18px;
             }
 
-        	.header {
-        		display: flex;
-        		flex-direction: row;
-        		justify-content: space-between;
-        		align-items: center;
-        		padding: 36px 40px;
-        	}
-        	.header-buttons {
-        		display: flex;
-        		flex-direction: row;
-        		justify-content: space-between;
-        		align-items: center;
-        	}
-        	.login-button {
-        		height: 50px;
-        		color: ${colors.primary};
-        	}
+            .header {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 36px 40px;
+            }
+            .header-buttons {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .login-button {
+                height: 50px;
+                color: ${colors.primary};
+            }
             .logout-button {
                 color: ${colors.primary};
                 font-size: 18px;
                 font-family: Avenir-Black;
             }
-        	.getstarted-button {
-        		margin-left: 42px;
-        	}
-        	.content {
+            .getstarted-button {
+                margin-left: 42px;
+            }
+        `}</style>
+    </div>
+)
+
+
+const withLayout = Page => {
+      const Layout = (props) => (
+      <div>
+        <Header {...props} />
+      	<div className={"page-content"}>
+    	  	<div className={"background-rectangle"}/>
+
+    	    <div className="modal">
+    		    <Page {...props} />
+    		</div>
+    	</div>
+
+        <style jsx global>{`
+
+        	.page-content {
         		display: flex;
         		justify-content: center;
         	}
@@ -124,7 +131,7 @@ const withLayout = Page => {
         		margin-top: 25px;
         		height: 800px;
         		width: 120%;
-        		background-color: ${colors.primary};
+        		background-color: ${colors.grey};
         		transform: rotate(-1deg);
         	}
         	.modal {
