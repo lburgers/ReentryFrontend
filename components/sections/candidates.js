@@ -32,9 +32,35 @@ const ProgressBar = (props) => {
 
   )
 }
-const Candidate = ({request, viewRequest}) => {
+
+const getButtonText = (stage) => {
+  switch (stage) {
+    case 0:
+      return 'Remind'
+    case 1:
+      return 'Sign'
+    case 2:
+      return 'Send'
+  }
+}
+
+const getButtonFunc = (stage) => {
+  switch (stage) {
+    case 0:
+      return 'remind'
+    case 1:
+      return 'sign'
+    case 2:
+      return 'view'
+  }
+}
+
+const Candidate = ({request, buttonFuncs}) => {
   const formOne_stage = request.stage
   const formTwo_stage = request.stage
+
+  const formOne_func = buttonFuncs[getButtonFunc(formOne_stage)]
+  const formTwo_func = buttonFuncs[getButtonFunc(formTwo_stage)]
 
   return  (
       <div className="candidate-container">
@@ -52,12 +78,12 @@ const Candidate = ({request, viewRequest}) => {
         <div className="table-row">
           <div className="form-title">Form 1</div>
           <ProgressBar stage={formOne_stage}/>
-          <Button title={formOne_stage == 0 ? 'Remind' : 'Sign'} width={105} height={25} fontSize={12} onClick={() => viewRequest('8850')}/>
+          <Button title={getButtonText(formOne_stage)} width={105} height={25} fontSize={12} onClick={() => formOne_func('8850')}/>
         </div>
         <div className="table-row">
           <div className="form-title">Form 2</div>
           <ProgressBar stage={formTwo_stage}/>
-          <Button title={formTwo_stage == 0 ? 'Remind' : 'Sign'} width={105} height={25} fontSize={12} onClick={() => viewRequest('9061')}/>
+          <Button title={getButtonText(formTwo_stage)} width={105} height={25} fontSize={12} onClick={() => formTwo_func('9061')}/>
         </div>
 
         <style jsx>{`
@@ -122,11 +148,17 @@ class Candidates extends Component {
         });
 
         this.setState({ requests })
-      }).catch(console.log)
+      })
   }
 
   viewRequest = (id) => (type) => {
     Router.push(`/viewform?id=${id}&type=${type}&token=${this.props.user.token}`)
+  }
+
+  signRequest = (id) => (type) => {
+    db.request.sign(id, type).then(data => {
+      Router.push(data.url)
+    }).catch(console.error)
   }
 
   render() {
@@ -136,18 +168,33 @@ class Candidates extends Component {
         <h1 className="candidates-title">Candidates</h1>
 
         { this.state.requests.length > 0 && this.state.requests.map((request) => 
-            <Candidate key={request._id} request={request} viewRequest={this.viewRequest(request._id)} />
+            <Candidate key={request._id}
+                       request={request}
+                       buttonFuncs={{
+                          remind: () => {},
+                          view: this.viewRequest(request._id),
+                          sign: this.signRequest(request._id),
+                        }}
+            />
           )
         }
         { this.state.requests.length == 0 &&
-          <Candidate key={0} request={{employee_name: 'Loading...', stage: 0}} viewRequest={() => {}} />
+          <Candidate key={0} request={{employee_name: 'Loading...', stage: 0}} 
+                     buttonFuncs={{
+                        remind: () => {},
+                        view: () => {},
+                        sign: () => {},
+                      }}
+          />
         }
         
-        <div className="invite-button">
-          <Button title="Invite Candidate" width={228} height={47} 
-                  onClick={() => this.props.switchPage("invite")}
-          />
-        </div>
+        { this.props.user_type == 'employer' && 
+          <div className="invite-button">
+            <Button title="Invite Candidate" width={228} height={47} 
+                    onClick={() => this.props.switchPage("invite")}
+            />
+          </div>
+        }
         <style jsx>{`
           .candidates-container { 
           }

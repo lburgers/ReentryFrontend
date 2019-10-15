@@ -88,7 +88,6 @@ export const createRequest = (requestInfo) => {
 			try {
 				requestInfo = {
 					employer_id: state.user._id,
-					stage: 0, // employee exists but has not yet accepted
 					...requestInfo,
 				}
 				await db.request.add(requestInfo)

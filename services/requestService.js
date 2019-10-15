@@ -1,9 +1,7 @@
-import axios from "axios"
-import config from "../config.js"
-
+import { instance } from '../pages/_app'
 import { loadState } from '../store'
 
-const base_url = config.api_url + '/requests/'
+const base_url = '/requests/'
 
 const authHeader = () => {
     // return authorization header with jwt token
@@ -20,85 +18,50 @@ const authHeader = () => {
 }
 
 const add = async (params) => {
-	try {
-		axios.defaults.baseURL = base_url
-		const response = await axios.post('create', params)
-		return response
-	} catch (e) {
-		throw e
-	}
+	const response = await instance.post(base_url + 'create', params)
+	return response
 }
 
 const sign = async (id, type) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.post('sign', {id, type})
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+	const response = await instance.post(base_url + 'sign', {id, type})
+	return response.data
 }
 
 const update = async (id, params) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.put(id, params)
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+	const response = await instance.put(base_url + id, params)
+	return response.data
 }
 
 const _delete = async (id) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.delete(id)
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+	const response = await instance.delete(base_url + id)
+	return response.data
 }
 
 const get = async (id) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.get(id)
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+	const response = await instance.get(base_url + id)
+	return response.data
 }
 
 const getAll = async ({id, user_type}) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.get(`getAll?${user_type}_id=${id}`)
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+	const response = await instance.get(base_url + `getAll?${user_type}_id=${id}`)
+	return response.data
 }
 
 const viewForm = async({id, token, type}) => {
-	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = !!token ? token : authHeader()['Authorization'];
-		const response = await axios.get(`viewForm?id=${id}&type=${type}`, {
-            responseType: 'arraybuffer',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/pdf'
-            }
-        })
-		return response.data
-	} catch (e) {
-		throw e
-	}
+	instance.defaults.headers.common['Authorization'] = !!token ? token : authHeader()['Authorization'];
+	const response = await instance.get(base_url + `viewForm?id=${id}&type=${type}`, {
+        responseType: 'arraybuffer',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/pdf'
+        }
+    })
+	return response.data
 }
 
 const requestService = {

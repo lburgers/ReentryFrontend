@@ -1,10 +1,18 @@
 import App, { Container } from 'next/app'
 import React from 'react'
 import withReduxStore from '../lib/with-redux-store'
+import { logOut } from '../redux/actions'
 import { Provider } from 'react-redux'
 import Router, { withRouter } from 'next/router';
 
-// TODO: add routing away from unauthorized pages
+import axios from "axios"
+import config from "../config.js"
+
+export const instance = axios.create({
+    baseURL: config.api_url,
+    timeout: 10000,
+    params: {} // do not remove this, its added to add params later in the config
+});
 
 const whitelisted_routes = [
   '/',
@@ -27,7 +35,28 @@ class MyApp extends App {
     checkLoggedIn({ store: this.props.store, router: this.props.router })
   }
 
+
+  componentWillMount() {
+    // check for unauthorized calls and logout
+    const UNAUTHORIZED = 401;
+    console.log('adding intercept')
+    instance.interceptors.response.use(
+      response => response,
+      error => {
+        console.log('tracking error', error)
+        const { status } = error.response;
+        if (status === UNAUTHORIZED) {
+          this.props.store.dispatch(logOut());
+          Router.push('/')
+        }
+       return Promise.reject(error);
+     }
+    );
+
+  }
+
   render () {
+
     const { Component, pageProps, store, router } = this.props
     return (
       <Container>
