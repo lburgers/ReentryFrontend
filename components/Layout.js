@@ -9,7 +9,9 @@ import { logOut, switchPage } from '../redux/actions'
 export const Header = (props) => (
     <div className="header">
         <div className="left-header">
-            <img src={"/static/creditclaim.svg"} />
+            <Link href={'/'}>
+                <img src={"/static/creditclaim.svg"} />
+            </Link>
             {props.loggedIn && 
                 <div className="menu-items">
                     <div className={`${props.activeSection == 'candidates' ? 'active-': ''}menu-item`}
@@ -65,6 +67,7 @@ export const Header = (props) => (
                 justify-content: space-between;
             }
             .menu-item {
+                width: 100px;
                 font-size: 18px;
                 font-family: Avenir-Medium;
                 color: ${colors.primary};
