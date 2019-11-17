@@ -8,7 +8,7 @@ import Button from './Button'
 
 const Header = (props) => (
   <div className="navbar">
-  	<Link href="/">
+  	<Link href={props.loggedIn ? '/app' : '/'}>
 	  	<h1>Prisonplicity</h1>
   	</Link>
 	<ul>

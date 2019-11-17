@@ -3,4 +3,7 @@ node_modules/
 .next/
 
 # config files
-config.json
+config.js
+
+# old files
+old/

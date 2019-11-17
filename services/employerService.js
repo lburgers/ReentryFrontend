@@ -1,9 +1,7 @@
-import axios from "axios"
-import config from "../config.json"
-
+import { instance } from '../pages/_app'
 import { loadState } from '../store'
 
-const base_url = config.api_url + '/employers/'
+const base_url = '/employers/'
 
 const authHeader = () => {
     // return authorization header with jwt token
@@ -21,8 +19,7 @@ const authHeader = () => {
 
 const add = async (params) => {
 	try {
-		axios.defaults.baseURL = base_url
-		const response = await axios.post('create', params)
+		const response = await instance.post(base_url + 'create', params)
 		return response
 	} catch (e) {
 		throw e
@@ -31,9 +28,8 @@ const add = async (params) => {
 
 const update = async (id, params) => {
 	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.put(id, params)
+		instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+		const response = await instance.put(base_url + id, params)
 		return response.data
 	} catch (e) {
 		throw e
@@ -42,9 +38,8 @@ const update = async (id, params) => {
 
 const _delete = async (id) => {
 	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.delete(id)
+		instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+		const response = await instance.delete(base_url + id)
 		return response.data
 	} catch (e) {
 		throw e
@@ -53,9 +48,8 @@ const _delete = async (id) => {
 
 const get = async (id) => {
 	try {
-		axios.defaults.baseURL = base_url
-		axios.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
-		const response = await axios.get(id)
+		instance.defaults.headers.common['Authorization'] = authHeader()['Authorization'];
+		const response = await instance.get(base_url + id)
 		return response.data
 	} catch (e) {
 		throw e
@@ -64,8 +58,7 @@ const get = async (id) => {
 
 const authenticate = async ({email, password}) => {
 	try {
-		axios.defaults.baseURL = base_url
-		const response = await axios.post('authenticate', {email, password})
+		const response = await instance.post(base_url + 'authenticate', {email, password})
 		return response
 	} catch (e) {
 		throw e

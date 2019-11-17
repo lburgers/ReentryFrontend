@@ -1,39 +1,43 @@
 import { connect } from 'react-redux'
 import { bindActionCreators } from "redux";
+import Router, { withRouter } from 'next/router';
 import withLayout from '../components/Layout';
 import MultiForm from '../components/MultiForm';
 import colors from '../lib/colors'
-import userSignup from '../lib/forms/userSignup'
+import { employer } from '../lib/forms/employer'
+import { employee } from '../lib/forms/employee'
 import { createUser } from '../redux/actions'
 
 
-const SignUp = (props) => (
-	<div className="container">
-		<div className="box">
-			{!props.loggedIn && <MultiForm forms={userSignup}
-                 onSubmit={(user) => props.createUser(user)}
+const SignUp = (props) => {
+
+  if (props.loggedIn) {
+    Router.push('/app')
+  }
+
+  // if employee flow show different signup form
+  if (props.router.query.type == 'employee') {
+    return (
+      <MultiForm initialState={{}}
+                 form={employee}
+                 successCallback={(user) => props.createUser(user, props.router.query.goTo, 'employee')}
                  disabled={props.loggedIn || props.isCreatingAccount}
-      />}
-		</div>
-    <style jsx>{`
-      .container { 
-        display: flex;
-        justify-content: center;
-      	padding: 75px 0px 75px 0px;
-      }
-      .box {
-      	width: 605px;
-      	padding: 75px 0px 75px 0px;
-      	border-radius: 5px;
-    		background: ${colors.white};
-    		box-shadow: 0 0 5px 1px ${colors.shadow};
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-    `}</style>
-	</div>
-);
+                 title={'Get Started'}
+                 headers={['Personal', 'Address', 'Account']}
+      />
+    )
+  } else {
+    return (
+      <MultiForm initialState={{}}
+                 form={employer}
+                 successCallback={(user) => props.createUser(user, props.router.query.goTo, 'employer')}
+                 disabled={props.loggedIn || props.isCreatingAccount}
+                 title={'Get Started'}
+                 headers={['Company', 'Address', 'Account']}
+      />
+    )
+  }
+}
 
 const mapStateToProps = state => {
     return {
@@ -54,4 +58,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withLayout(SignUp))
+)(withRouter(withLayout(SignUp)))
